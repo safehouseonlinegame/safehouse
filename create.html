@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAFEHOUSE — Create Character</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#000;font-family:'DM Sans',sans-serif;color:#e8dcc8;min-height:100vh;display:flex;justify-content:center;align-items:flex-start;padding:20px 0}
+.phone{width:390px;min-height:700px;background:#000;display:flex;flex-direction:column;position:relative;overflow:hidden;margin:0 auto}
+
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;opacity:0;pointer-events:none;transition:opacity .6s ease}
+.screen.active{opacity:1;pointer-events:all;position:relative}
+
+/* SCREEN 1 */
+#s1{background:#0a0806;justify-content:space-between;padding:60px 32px 48px}
+.s1-top{display:flex;flex-direction:column;align-items:center;gap:8px}
+.s1-logo{width:200px;height:auto}
+.s1-step{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#3a3028;margin-top:16px}
+.s1-mid{display:flex;flex-direction:column;align-items:center;gap:24px;flex:1;justify-content:center}
+.s1-prompt{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;color:#e8dcc8;text-align:center;line-height:1.2}
+.s1-prompt span{color:#c8786a}
+.name-input{background:transparent;border:none;border-bottom:1px solid #3a3028;color:#e8dcc8;font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:3px;text-align:center;outline:none;width:100%;padding:8px 0;transition:.3s}
+.name-input:focus{border-bottom-color:#c8786a}
+.name-input::placeholder{color:#2a2520;letter-spacing:3px}
+.s1-hint{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#3a3028;text-align:center}
+.s1-bottom{display:flex;flex-direction:column;gap:12px}
+
+/* SCREEN 2 */
+#s2{background:#0a0806;padding:48px 24px 40px;gap:0}
+.s2-top{display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:24px}
+.s2-step{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#3a3028}
+.s2-title{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;color:#e8dcc8;text-align:center}
+.s2-sub{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:#4a4038;text-align:center}
+.occ-list{display:flex;flex-direction:column;gap:8px;flex:1}
+.occ-card{display:flex;align-items:center;gap:14px;padding:14px 16px;border:1px solid #1e1c14;background:#0e0c08;cursor:pointer;transition:.2s;-webkit-tap-highlight-color:transparent;position:relative;overflow:hidden}
+.occ-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:transparent;transition:.2s}
+.occ-card.selected{border-color:#c8786a;background:#1a100a}
+.occ-card.selected::before{background:#c8786a}
+.occ-card:active{background:#151208}
+.occ-ico{font-size:24px;width:36px;text-align:center;flex-shrink:0}
+.occ-info{flex:1}
+.occ-name{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1.5px;color:#e8dcc8}
+.occ-desc{font-size:11px;color:#6a5e4a;margin-top:1px}
+.occ-bonus{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;color:#c8786a;margin-top:3px}
+.occ-check{width:18px;height:18px;border:1px solid #2a2520;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:.2s}
+.occ-card.selected .occ-check{border-color:#c8786a;background:#c8786a}
+.occ-card.selected .occ-check::after{content:'✓';font-size:11px;color:#000;font-weight:700}
+.s2-bottom{margin-top:16px}
+
+/* SCREEN 3 */
+#s3{background:#000;justify-content:center;align-items:center;padding:48px 32px}
+.gen-logo{width:180px;height:auto;margin-bottom:40px}
+.gen-lines{display:flex;flex-direction:column;gap:16px;width:100%}
+.gen-line{display:flex;align-items:center;gap:12px;opacity:0;transform:translateY(8px);transition:opacity .5s ease,transform .5s ease}
+.gen-line.show{opacity:1;transform:translateY(0)}
+.gen-dot{width:6px;height:6px;border-radius:50%;background:#2a2520;flex-shrink:0;transition:.3s}
+.gen-dot.done{background:#c8786a}
+.gen-text{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#4a4038;transition:.3s}
+.gen-line.show .gen-text{color:#8a7868}
+.gen-line.done-line .gen-text{color:#c8b888}
+.gen-line.done-line .gen-dot{background:#6a8a4a}
+.gen-bar-wrap{width:100%;height:1px;background:#1a1812;margin-top:32px;overflow:hidden}
+.gen-bar{height:100%;background:#c8786a;width:0%;transition:width .3s}
+.gen-final{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:3px;color:#e8dcc8;text-align:center;margin-top:32px;opacity:0;transition:opacity .6s}
+.gen-final.show{opacity:1}
+.gen-final span{color:#c8786a}
+
+/* SHARED */
+.main-btn{padding:16px;background:#c8786a;color:#000;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:3px;border:none;cursor:pointer;width:100%;transition:.15s;-webkit-tap-highlight-color:transparent}
+.main-btn:active{background:#a85a4a}
+.main-btn:disabled{background:#1a1812;color:#2a2520;cursor:default}
+.step-dots{display:flex;gap:6px;justify-content:center;margin-bottom:24px}
+.dot{width:6px;height:6px;border-radius:50%;background:#1e1c14;transition:.3s}
+.dot.active{background:#c8786a}
+.dot.done{background:#3a3028}
+</style>
+</head>
+<body>
+<div class="phone">
+
+  <div class="screen active" id="s1">
+    <div class="s1-top">
+      <img class="s1-logo" src="https://i.imgur.com/YbWzQNG.png" alt="SAFEHOUSE">
+      <div class="s1-step">Step 1 of 2</div>
+    </div>
+    <div class="s1-mid">
+      <div class="step-dots">
+        <div class="dot active"></div>
+        <div class="dot"></div>
+      </div>
+      <div class="s1-prompt">What do they<br>call you, <span>survivor?</span></div>
+      <input class="name-input" id="char-name" placeholder="YOUR NAME" maxlength="16" autocomplete="off" spellcheck="false">
+      <div class="s1-hint">This is how the world will know you</div>
+    </div>
+    <div class="s1-bottom">
+      <button class="main-btn" id="s1-btn" onclick="goToS2()" disabled>CONTINUE</button>
+    </div>
+  </div>
+
+  <div class="screen" id="s2">
+    <div class="s2-top">
+      <div class="s2-step">Step 2 of 2</div>
+      <div class="s2-title">Choose your role</div>
+      <div class="s2-sub">Your occupation defines your starting skills</div>
+    </div>
+    <div class="step-dots">
+      <div class="dot done"></div>
+      <div class="dot active"></div>
+    </div>
+    <div class="occ-list" id="occ-list"></div>
+    <div class="s2-bottom">
+      <button class="main-btn" id="s2-btn" onclick="goToS3()" disabled>ENTER THE WORLD</button>
+    </div>
+  </div>
+
+  <div class="screen" id="s3">
+    <img class="gen-logo" src="https://i.imgur.com/YbWzQNG.png" alt="SAFEHOUSE">
+    <div class="gen-lines">
+      <div class="gen-line" id="gl1"><div class="gen-dot" id="gd1"></div><div class="gen-text">Registering survivor profile...</div></div>
+      <div class="gen-line" id="gl2"><div class="gen-dot" id="gd2"></div><div class="gen-text">Calculating world position...</div></div>
+      <div class="gen-line" id="gl3"><div class="gen-dot" id="gd3"></div><div class="gen-text">Scanning nearby area...</div></div>
+      <div class="gen-line" id="gl4"><div class="gen-dot" id="gd4"></div><div class="gen-text">Generating locations...</div></div>
+      <div class="gen-line" id="gl5"><div class="gen-dot" id="gd5"></div><div class="gen-text">Populating resources...</div></div>
+      <div class="gen-line" id="gl6"><div class="gen-dot" id="gd6"></div><div class="gen-text">Preparing your safehouse...</div></div>
+    </div>
+    <div class="gen-bar-wrap"><div class="gen-bar" id="gen-bar"></div></div>
+    <div class="gen-final" id="gen-final">Your world is <span>ready.</span></div>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const OCCUPATIONS=[
+  {key:'scavenger',icon:'🎒',name:'Scavenger',desc:'Finds more resources in the field',bonus:'+2 Perception · Starts with extra food'},
+  {key:'medic',icon:'🩺',name:'Medic',desc:'Keeps the group alive longer',bonus:'+2 Immunity · Starts with medicine'},
+  {key:'soldier',icon:'⚔️',name:'Soldier',desc:'Built for combat and heavy work',bonus:'+2 Strength · Starts with a weapon'},
+  {key:'engineer',icon:'🔧',name:'Engineer',desc:'Builds and repairs better',bonus:'+2 Crafting · Starts with tools'},
+  {key:'scout',icon:'👁️',name:'Scout',desc:'Moves fast, sees further',bonus:'+2 Cardio · Discovers more locations'},
+];
+
+const STAT_BONUSES={
+  scavenger:{perception:2},
+  medic:{immunity:2},
+  soldier:{strength:2},
+  engineer:{crafting:2},
+  scout:{cardio:2}
+};
+
+const STARTER_ITEMS={
+  scavenger:[{name:'Canned Beans',qty:3,weight:0.8,item_type:'food'}],
+  medic:[{name:'Medicine',qty:2,weight:0.3,item_type:'medicine'},{name:'Bandage',qty:3,weight:0.2,item_type:'medicine'}],
+  soldier:[{name:'Combat Knife',qty:1,weight:0.6,item_type:'weapon'}],
+  engineer:[{name:'Tools',qty:1,weight:1.2,item_type:'tool'},{name:'Rope',qty:2,weight:0.5,item_type:'tool'}],
+  scout:[{name:'Bandage',qty:2,weight:0.2,item_type:'medicine'},{name:'Water Bottle',qty:2,weight:0.6,item_type:'water'}]
+};
+
+let selectedOcc=null;
+
+function renderOccs(){
+  const g=document.getElementById('occ-list');g.innerHTML='';
+  OCCUPATIONS.forEach(o=>{
+    const d=document.createElement('div');d.className='occ-card';d.id='occ-'+o.key;
+    d.innerHTML=`<div class="occ-ico">${o.icon}</div>
+<div class="occ-info"><div class="occ-name">${o.name}</div><div class="occ-desc">${o.desc}</div><div class="occ-bonus">${o.bonus}</div></div>
+<div class="occ-check"></div>`;
+    d.onclick=()=>selectOcc(o.key);
+    g.appendChild(d);
+  });
+}
+
+function selectOcc(key){
+  selectedOcc=key;
+  document.querySelectorAll('.occ-card').forEach(c=>c.classList.remove('selected'));
+  document.getElementById('occ-'+key).classList.add('selected');
+  document.getElementById('s2-btn').disabled=false;
+}
+
+document.getElementById('char-name').addEventListener('input',function(){
+  document.getElementById('s1-btn').disabled=this.value.trim().length<2;
+});
+
+function goToS2(){
+  if(document.getElementById('char-name').value.trim().length<2)return;
+  document.getElementById('s1').classList.remove('active');
+  document.getElementById('s2').classList.add('active');
+}
+
+function goToS3(){
+  if(!selectedOcc)return;
+  document.getElementById('s2').classList.remove('active');
+  document.getElementById('s3').classList.add('active');
+  runGeneration();
+}
+
+async function saveCharacter(){
+  const {data:{session}}=await sb.auth.getSession();
+  if(!session)return;
+  const userId=session.user.id;
+  const charName=document.getElementById('char-name').value.trim();
+  const bonuses=STAT_BONUSES[selectedOcc]||{};
+  const spawnX=Math.random()*800+100;
+  const spawnY=Math.random()*800+100;
+
+  await sb.from('players').upsert({
+    id:userId,
+    email:session.user.email,
+    username:session.user.user_metadata?.username||charName,
+    char_name:charName,
+    occupation:selectedOcc,
+    world_x:spawnX,
+    world_y:spawnY,
+    strength:1+(bonuses.strength||0),
+    endurance:1+(bonuses.endurance||0),
+    scavenging:1+(bonuses.perception||0),
+    stealth:1,
+    crafting:1+(bonuses.crafting||0),
+    cardio:1+(bonuses.cardio||0),
+    immunity:1+(bonuses.immunity||0),
+    food_water:100,
+    food_water_max:100,
+    energy:100,
+    energy_max:100,
+    condition:'normal'
+  });
+
+  const items=STARTER_ITEMS[selectedOcc]||[];
+  for(const item of items){
+    await sb.from('inventory').insert({player_id:userId,...item});
+  }
+}
+
+function runGeneration(){
+  const steps=[
+    {line:'gl1',dot:'gd1',delay:300},
+    {line:'gl2',dot:'gd2',delay:900},
+    {line:'gl3',dot:'gd3',delay:1500},
+    {line:'gl4',dot:'gd4',delay:2200},
+    {line:'gl5',dot:'gd5',delay:2900},
+    {line:'gl6',dot:'gd6',delay:3600},
+  ];
+  const bar=document.getElementById('gen-bar');
+  steps.forEach((s,i)=>{
+    setTimeout(()=>{
+      const line=document.getElementById(s.line);
+      const dot=document.getElementById(s.dot);
+      line.classList.add('show');
+      setTimeout(()=>{
+        line.classList.add('done-line');
+        dot.classList.add('done');
+        bar.style.width=Math.round(((i+1)/steps.length)*100)+'%';
+        if(i===2) saveCharacter();
+      },500);
+    },s.delay);
+  });
+  setTimeout(()=>{
+    document.getElementById('gen-final').classList.add('show');
+    setTimeout(()=>{window.location.href='index.html';},2000);
+  },4800);
+}
+
+renderOccs();
+</script>
+</body>
+</html>
