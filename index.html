@@ -49,6 +49,7 @@ body{background:#2a2520;font-family:'DM Sans',sans-serif;color:var(--ink);font-s
 .auth-footer-text{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink4)}
 .error-msg{font-size:11px;color:var(--rust2);text-align:center;display:none}
 .error-msg.show{display:block}
+.loading{text-align:center;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--ink4);padding:20px}
 </style>
 </head>
 <body>
@@ -59,7 +60,6 @@ body{background:#2a2520;font-family:'DM Sans',sans-serif;color:var(--ink);font-s
   </div>
 
   <div class="auth-body">
-
     <div id="screen-login" class="screen active">
       <div>
         <div class="auth-title">Welcome back</div>
@@ -127,7 +127,6 @@ body{background:#2a2520;font-family:'DM Sans',sans-serif;color:var(--ink);font-s
         Already surviving? <button class="toggle-btn" onclick="showScreen('login')">Sign in</button>
       </div>
     </div>
-
   </div>
 
   <div class="auth-footer">
@@ -137,9 +136,19 @@ body{background:#2a2520;font-family:'DM Sans',sans-serif;color:var(--ink);font-s
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const SUPABASE_URL = 'YOUR_SUPABASE_URL';
-const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+const SUPABASE_URL = 'https://yegoxuvkheiifbhvfbqd.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InllZ294dXZraGVpaWZiaHZmYnFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwODg4ODEsImV4cCI6MjA5NTY2NDg4MX0.2J10TXL4AwdRDWqob9Zj_wppA1ZkSUPCGRX_xAweAAY';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// Check if already logged in
+(async()=>{
+  const {data:{session}}=await sb.auth.getSession();
+  if(session){
+    const {data:player}=await sb.from('players').select('id').eq('id',session.user.id).single();
+    if(player) window.location.href='game.html';
+    else window.location.href='create.html';
+  }
+})();
 
 function showScreen(name){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
@@ -147,9 +156,9 @@ function showScreen(name){
 }
 
 async function googleLogin(){
-  const {error} = await sb.auth.signInWithOAuth({
+  const {error}=await sb.auth.signInWithOAuth({
     provider:'google',
-    options:{redirectTo:'https://safehousegame.vercel.app/index.html'}
+    options:{redirectTo:'https://safehousegame.vercel.app/'}
   });
   if(error) alert(error.message);
 }
@@ -162,7 +171,12 @@ async function emailLogin(){
   if(!email||!password){err.textContent='Please fill in all fields.';err.classList.add('show');return;}
   const {error}=await sb.auth.signInWithPassword({email,password});
   if(error){err.textContent=error.message;err.classList.add('show');return;}
-  window.location.href='index.html';
+  const {data:{session}}=await sb.auth.getSession();
+  if(session){
+    const {data:player}=await sb.from('players').select('id').eq('id',session.user.id).single();
+    if(player) window.location.href='game.html';
+    else window.location.href='create.html';
+  }
 }
 
 async function emailSignup(){
@@ -174,12 +188,14 @@ async function emailSignup(){
   if(!username||!email||!password){err.textContent='Please fill in all fields.';err.classList.add('show');return;}
   const {data,error}=await sb.auth.signUp({email,password,options:{data:{username}}});
   if(error){err.textContent=error.message;err.classList.add('show');return;}
-  window.location.href='index.html';
+  window.location.href='create.html';
 }
 
-sb.auth.onAuthStateChange((event,session)=>{
+sb.auth.onAuthStateChange(async(event,session)=>{
   if(event==='SIGNED_IN'&&session){
-    window.location.href='index.html';
+    const {data:player}=await sb.from('players').select('id').eq('id',session.user.id).single();
+    if(player) window.location.href='game.html';
+    else window.location.href='create.html';
   }
 });
 </script>
