@@ -20,9 +20,9 @@
 body{background:var(--bg);font-family:'Courier New',monospace;color:var(--text);font-size:13px;line-height:1.4}
 .app{max-width:780px;margin:0 auto;background:var(--bg)}
 
-.topbar{background:var(--bg2);border-bottom:1px solid var(--border2);padding:0 14px;display:flex;align-items:center;gap:12px}
-.logo{font-size:17px;font-weight:700;letter-spacing:3px;color:var(--text);padding:11px 0;flex-shrink:0}
-.logo span{color:var(--red2)}
+.topbar{background:#000;border-bottom:1px solid var(--border2);padding:0 14px;display:flex;align-items:center;gap:12px}
+.logo{padding:8px 0;flex-shrink:0}
+.logo img{height:32px;width:auto;object-fit:contain}
 .top-center{font-size:11px;letter-spacing:2px;color:var(--text2);text-transform:uppercase;flex:1;padding:11px 0}
 .top-right{display:flex;align-items:center;gap:14px;padding:11px 0;flex-shrink:0}
 .top-badge{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2);letter-spacing:1px}
@@ -169,7 +169,7 @@ input[type=file]{display:none}
 
 <div class="app">
   <div class="topbar">
-    <div class="logo">SAFE<span>HOUSE</span></div>
+    <div class="logo"><img src="https://i.imgur.com/YbWzQNG.png" alt="SAFEHOUSE"></div>
     <div class="top-center">CHARACTER</div>
     <div class="top-right">
       <div class="top-badge"><i class="ti ti-sun" aria-hidden="true"></i> DAY <span id="day-num">3</span></div>
